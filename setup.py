@@ -12,7 +12,7 @@ requirements = ['cryptography', 'typing_extensions', 'urllib3', ]
 test_requirements = ['pytest>=3', ]
 
 setup(
-    name='growthbook',
+    name='aiogrowthbook',
     version='1.3.0',
     author="GrowthBook",
     author_email='hello@growthbook.io',
@@ -38,9 +38,9 @@ setup(
     license="MIT",
     include_package_data=True,
     packages=find_packages(),
-    package_data={"growthbook": ["py.typed"]},
-    keywords='growthbook',
-    py_modules=['growthbook'],
+    package_data={"aiogrowthbook": ["py.typed"]},
+    keywords='aiogrowthbook',
+    py_modules=['aiogrowthbook'],
     # scripts=['growthbook/growthbook.py', 'growthbook/growthbook_asyncio.py'],
     test_suite='tests',
     tests_require=test_requirements,

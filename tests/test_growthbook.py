@@ -4,7 +4,7 @@ import json
 import os
 from typing import Union
 
-from growthbook import (
+from aiogrowthbook import (
     FeatureRule,
     GrowthBook,
     Experiment,

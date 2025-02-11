@@ -19,13 +19,14 @@ Powerful Feature flagging and A/B testing for Python apps.
 ## Quick Usage
 
 ```python
-from growthbook import GrowthBook
+from aiogrowthbook import GrowthBook
 
 # User attributes for targeting and experimentation
 attributes = {
   "id": "123",
   "customUserAttribute": "foo"
 }
+
 
 def on_experiment_viewed(experiment, result):
   # Use whatever event tracking system you want
@@ -34,12 +35,13 @@ def on_experiment_viewed(experiment, result):
     'variationId': result.variationId
   })
 
+
 # Create a GrowthBook instance
 gb = GrowthBook(
-  attributes = attributes,
-  on_experiment_viewed = on_experiment_viewed,
-  api_host = "https://cdn.growthbook.io",
-  client_key = "sdk-abc123"
+  attributes=attributes,
+  on_experiment_viewed=on_experiment_viewed,
+  api_host="https://cdn.growthbook.io",
+  client_key="sdk-abc123"
 )
 
 # Load features from the GrowthBook API with caching
@@ -60,21 +62,23 @@ For web frameworks, you should create a new `GrowthBook` instance for every inco
 In Django, for example, this is best done with a simple middleware:
 
 ```python
-from growthbook import GrowthBook
+from aiogrowthbook import GrowthBook
+
 
 def growthbook_middleware(get_response):
-    def middleware(request):
-        request.gb = GrowthBook(
-          # ...
-        )
-        request.gb.load_features()
+  def middleware(request):
+    request.gb = GrowthBook(
+      # ...
+    )
+    request.gb.load_features()
 
-        response = get_response(request)
+    response = get_response(request)
 
-        request.gb.destroy() # Cleanup
+    request.gb.destroy()  # Cleanup
 
-        return response
-    return middleware
+    return response
+
+  return middleware
 ```
 
 Then, you can easily use GrowthBook in any of your views:
@@ -116,7 +120,8 @@ Here is an example of using Redis:
 ```python
 from redis import Redis
 import json
-from growthbook import GrowthBook, AbstractFeatureCache, feature_repo
+from aiogrowthbook import GrowthBook, AbstractFeatureCache, feature_repo
+
 
 class RedisFeatureCache(AbstractFeatureCache):
   def __init__(self):
@@ -131,6 +136,7 @@ class RedisFeatureCache(AbstractFeatureCache):
   def set(self, key: str, value: dict, ttl: int) -> None:
     self.r.set(self.prefix + key, json.dumps(value))
     self.r.expire(self.prefix + key, ttl)
+
 
 # Configure GrowthBook to use your custom cache class
 feature_repo.set_cache(RedisFeatureCache())
@@ -208,7 +214,8 @@ Any time an experiment is run to determine the value of a feature, you want to t
 You can use the `on_experiment_viewed` option to do this:
 
 ```python
-from growthbook import GrowthBook, Experiment, Result
+from aiogrowthbook import GrowthBook, Experiment, Result
+
 
 def on_experiment_viewed(experiment: Experiment, result: Result):
   # Use whatever event tracking system you want
@@ -217,9 +224,10 @@ def on_experiment_viewed(experiment: Experiment, result: Result):
     'variationId': result.variationId
   })
 
+
 # Pass into constructor
 gb = GrowthBook(
-  on_experiment_viewed = on_experiment_viewed
+  on_experiment_viewed=on_experiment_viewed
 )
 ```
 
@@ -258,31 +266,33 @@ The attributeName/attributeValue combo is the primary key.
 Here's an example implementation using a theoretical `db` object:
 
 ```python
-from growthbook import AbstractStickyBucketService, GrowthBook
+from aiogrowthbook import AbstractStickyBucketService, GrowthBook
+
 
 class MyStickyBucketService(AbstractStickyBucketService):
-    # Lookup a sticky bucket document
-    def get_assignments(self, attributeName: str, attributeValue: str) -> Optional[Dict]:
-        return db.find({
-          "attributeName": attributeName,
-          "attributeValue": attributeValue
-        })
+  # Lookup a sticky bucket document
+  def get_assignments(self, attributeName: str, attributeValue: str) -> Optional[Dict]:
+    return db.find({
+      "attributeName": attributeName,
+      "attributeValue": attributeValue
+    })
 
-    def save_assignments(self, doc: Dict) -> None:
-        # Insert new record if not exists, otherwise update
-        db.upsert({
-            "attributeName": doc["attributeName"],
-            "attributeValue": doc["attributeValue"]
-        }, {
-          "$set": {
-            "assignments": doc["assignments"]
-          }
-        })
+  def save_assignments(self, doc: Dict) -> None:
+    # Insert new record if not exists, otherwise update
+    db.upsert({
+      "attributeName": doc["attributeName"],
+      "attributeValue": doc["attributeValue"]
+    }, {
+      "$set": {
+        "assignments": doc["assignments"]
+      }
+    })
+
 
 # Pass in an instance of this service to your GrowthBook constructor
 
 gb = GrowthBook(
-  sticky_bucket_service = MyStickyBucketService()
+  sticky_bucket_service=MyStickyBucketService()
 )
 ```
 
@@ -291,11 +301,11 @@ gb = GrowthBook(
 Instead of declaring all features up-front and referencing them by ids in your code, you can also just run an experiment directly. This is done with the `run` method:
 
 ```python
-from growthbook import Experiment
+from aiogrowthbook import Experiment
 
 exp = Experiment(
-  key = "my-experiment",
-  variations = ["red", "blue", "green"]
+  key="my-experiment",
+  variations=["red", "blue", "green"]
 )
 
 # Either "red", "blue", or "green"
@@ -473,13 +483,13 @@ you can use the `AsyncGrowthBook` class. It has feature parity with the `GrowthB
 - Sticky bucketing and caching services need to be asynchronous, using the `AbstractAsyncStickyBucketService` and `AbstractAsyncFeatureCache` base classes.
 
 ```python
-from growthbook import AsyncGrowthBook
+from aiogrowthbook import AsyncGrowthBook
 
 gb = AsyncGrowthBook(
-  attributes = attributes,
-  on_experiment_viewed = on_experiment_viewed,
-  api_host = "https://cdn.growthbook.io",
-  client_key = "sdk-abc123"
+  attributes=attributes,
+  on_experiment_viewed=on_experiment_viewed,
+  api_host="https://cdn.growthbook.io",
+  client_key="sdk-abc123"
 )
 
 # Setting features
@@ -493,29 +503,31 @@ await gb.startAutoRefresh()
 ### Sticky Bucketing
 
 ```python
-from growthbook import AbstractAsyncStickyBucketService, AsyncGrowthBook
+from aiogrowthbook import AbstractAsyncStickyBucketService, AsyncGrowthBook
+
 
 class MyAsyncStickyBucketService(AbstractAsyncStickyBucketService):
-        # Lookup a sticky bucket document
-    async def get_assignments(self, attributeName: str, attributeValue: str) -> Optional[Dict]:
-        return await db.find({
-          "attributeName": attributeName,
-          "attributeValue": attributeValue
-        })
+  # Lookup a sticky bucket document
+  async def get_assignments(self, attributeName: str, attributeValue: str) -> Optional[Dict]:
+    return await db.find({
+      "attributeName": attributeName,
+      "attributeValue": attributeValue
+    })
 
-    async def save_assignments(self, doc: Dict) -> None:
-        # Insert new record if not exists, otherwise update
-        await db.upsert({
-            "attributeName": doc["attributeName"],
-            "attributeValue": doc["attributeValue"]
-        }, {
-          "$set": {
-            "assignments": doc["assignments"]
-          }
-        })
+  async def save_assignments(self, doc: Dict) -> None:
+    # Insert new record if not exists, otherwise update
+    await db.upsert({
+      "attributeName": doc["attributeName"],
+      "attributeValue": doc["attributeValue"]
+    }, {
+      "$set": {
+        "assignments": doc["assignments"]
+      }
+    })
+
 
 gb = AsyncGrowthBook(
-  sticky_bucket_service = MyAsyncStickyBucketService()
+  sticky_bucket_service=MyAsyncStickyBucketService()
 )
 ```
 
@@ -524,7 +536,8 @@ gb = AsyncGrowthBook(
 ```python
 from redis.asyncio import Redis
 import json
-from growthbook import AbstractAsyncFeatureCache, AsyncGrowthBook, async_feature_repo
+from aiogrowthbook import AbstractAsyncFeatureCache, AsyncGrowthBook, async_feature_repo
+
 
 class AsyncRedisFeatureCache(AbstractAsyncFeatureCache):
   def __init__(self):
@@ -539,6 +552,7 @@ class AsyncRedisFeatureCache(AbstractAsyncFeatureCache):
   async def set(self, key: str, value: dict, ttl: int) -> None:
     await self.r.set(self.prefix + key, json.dumps(value))
     await self.r.expire(self.prefix + key, ttl)
+
 
 async_feature_repo.set_cache(AsyncRedisFeatureCache())
 ```
