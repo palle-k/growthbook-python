@@ -394,7 +394,7 @@ class AsyncGrowthBook(AgnosticGrowthBookBase):
     async def _eval_feature(self, key: str, stack: Set[str]) -> FeatureResult:
         logger.debug("Evaluating feature %s", key)
         if key not in self._features:
-            logger.warning("Unknown feature %s", key)
+            logger.debug("Unknown feature %s", key)
             return FeatureResult(None, "unknownFeature")
 
         if key in stack:
