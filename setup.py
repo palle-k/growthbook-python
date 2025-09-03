@@ -13,7 +13,7 @@ test_requirements = ['pytest>=3', ]
 
 setup(
     name='aiogrowthbook',
-    version='1.3.0',
+    version='1.3.1',
     author="GrowthBook",
     author_email='hello@growthbook.io',
     python_requires='>=3.6',
@@ -30,6 +30,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
     ],
     description="Powerful Feature flagging and A/B testing for Python apps",
     long_description=long_description,
