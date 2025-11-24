@@ -405,7 +405,7 @@ class AsyncGrowthBook(AgnosticGrowthBookBase):
         feature = self._features[key]
         for rule in feature.rules:
             logger.debug("Evaluating feature %s, rule %s", key, rule.to_dict())
-            if (rule.parentConditions):
+            if rule.parentConditions:
                 prereq_res = await self.eval_prereqs(rule.parentConditions, stack)
                 if prereq_res == "gate":
                     logger.debug("Top-level prerequisite failed, return None, feature %s", key)
@@ -448,7 +448,7 @@ class AsyncGrowthBook(AgnosticGrowthBookBase):
                 return FeatureResult(rule.force, "force", ruleId=rule.id)
 
             if rule.variations is None:
-                logger.warning("Skip invalid rule, feature %s", key)
+                logger.debug("Skip invalid rule, feature %s", key)
                 continue
 
             exp = Experiment(
